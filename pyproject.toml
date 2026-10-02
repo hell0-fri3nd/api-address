@@ -1,0 +1,25 @@
+[project]
+name = "api-address"
+version = "0.1.0"
+description = "technical exam for eastvantage for python backend developer role"
+authors = [
+    {name = "Art Lisboa",email = "lisboamillen30@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "sqlalchemy (>=2.1.2,<3.0.0)",
+    "fastapi (>=0.142.2,<0.143.0)",
+    "pymysql (>=1.2.3,<2.0.0)",
+    "pydantic (>=2.13.5,<3.0.0)",
+    "pydantic-settings (>=2.15.0,<3.0.0)",
+    "alembic (>=1.20.0,<2.0.0)",
+    "uvicorn[standard] (>=0.54.0,<0.55.0)"
+]
+
+[tool.poetry]
+package-mode = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
