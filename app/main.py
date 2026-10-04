@@ -1,50 +1,29 @@
-# main.py
-
+import logging
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
-from app.core import config
-from app.address import address_router as ADDRESS_ROUTERS
+from app.addresses import router as addresses_router
+from app.core import register_exception_handlers, settings
+
+API_PREFIX = "/api/v1"
+
+logging.basicConfig(level=settings.log_level)
 
 
-def create_app(config) -> FastAPI:
+def create_app() -> FastAPI:
     app = FastAPI(
-        title=config.project_name,
-        version=config.api_prefix,
-        # lifespan=lifespan,
-        description="""
-API Documentation for the address book application.
-
-### Features
-
-- Create, update and Delete A address
-- Retrieve addresses within a given distance and location coordinates.
-""",
+        title="Address Book API",
+        version="0.1.0",
+        description=(
+            "Create, update and soft delete addresses, and find the addresses "
+            "within a given distance of a location."
+        ),
     )
-    
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-        allow_headers=["Authorization", "Content-Type", "X-Correlation-ID"],
-        expose_headers=["X-Correlation-ID"],
-        max_age=3600
-    )
-    
-    for router in (
-        ADDRESS_ROUTERS,
-    ):
-        app.include_router(router, prefix=config.api_prefix)
 
-    @app.get("/health", tags=["Health"])
-    async def health_check():
-        return {
-            "status": "ok"
-        }
+    register_exception_handlers(app)
+    app.include_router(addresses_router, prefix=API_PREFIX)
 
     return app
 
 
-app = create_app(config)
+app = create_app()
