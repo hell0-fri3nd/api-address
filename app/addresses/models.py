@@ -1,13 +1,27 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Float, Integer, String
+from sqlalchemy import CheckConstraint, Float, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.core import Base
+from app.core import Base, UTCDateTime, utcnow
 
 
 class Address(Base):
     __tablename__ = "addresses"
+    __table_args__ = (
+        CheckConstraint(
+            "latitude BETWEEN -90 AND 90",
+            name="ck_addresses_latitude_range",
+        ),
+        CheckConstraint(
+            "longitude BETWEEN -180 AND 180",
+            name="ck_addresses_longitude_range",
+        ),
+        Index(
+            "ix_addresses_latitude",
+            "latitude",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(
         Integer,
@@ -51,14 +65,19 @@ class Address(Base):
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        UTCDateTime,
+        default=utcnow,
         nullable=False,
     )
 
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        UTCDateTime,
+        default=utcnow,
+        onupdate=utcnow,
         nullable=False,
+    )
+
+    deleted_at: Mapped[datetime | None] = mapped_column(
+        UTCDateTime,
+        nullable=True,
     )
